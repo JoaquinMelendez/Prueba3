@@ -22,6 +22,8 @@ print(
 )
 time.sleep(2)
 
+crear_archivo()
+
 while True:
     
     #MENU

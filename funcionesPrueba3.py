@@ -1,7 +1,38 @@
-import os
+import csv
 import datetime
-vehiculos = {} 
+import os
 
+vehiculos = {}
+
+
+#FUNCIONES PARA CSV
+def crear_archivo():
+    with open('BBDD/BaseAutos.csv', 'w', newline='') as archivo:
+        campos = ["Patente", "Marca", "Modelo", "Año", "Valor", "Estado"]
+        escritor_csv = csv.DictWriter(archivo, fieldnames=campos)
+        escritor_csv.writeheader()
+        print("Archivo creado")
+
+
+def leer_csv():
+    global vehiculos
+
+    with open('BBDD/BaseAutos.csv', 'r', newline='') as archivo:
+        lector_csv = csv.DictReader(archivo)
+        for fila in lector_csv:
+            vehiculos[fila["Patente"]] = fila
+
+def escribir_csv():
+    with open('BBDD/BaseAutos.csv', 'w', newline='') as archivo:
+        campos = ["Patente", "Marca", "Modelo", "Año", "Valor", "Estado"]
+        escritor_csv = csv.DictWriter(archivo, fieldnames=campos)
+        escritor_csv.writeheader()
+        for vehiculo in vehiculos.values():
+            escritor_csv.writerow(vehiculo)
+
+
+
+#FUNCIONES PARA APLICACION
 def registro_auto():
     while True:
         # Instrucciones para insertar PATENTE. Restricciones y "Salir"
@@ -10,7 +41,7 @@ def registro_auto():
             break
         elif len(patente) != 6:
             print("Debe ingresar una patente válida")
-            input("Pulse ENTER para continuar volver al Menú Principal")
+            input("Pulse ENTER para continuar y volver al Menú Principal")
             return
 
         # Instrucciones para insertar MARCA. Restricciones y "Salir"
@@ -19,8 +50,8 @@ def registro_auto():
             break
         elif len(marca_vehiculo) <= 3:
             print("Debe ingresar una marca de vehículo válida para hacer válido el ingreso")
-            print("ERROR ENCONTRADO: La marca que escribió tiene menos de 3 carácteres")
-            input("Pulse ENTER para continuar volver al Menú Principal")
+            print("ERROR ENCONTRADO: La marca que escribió tiene menos de 3 caracteres")
+            input("Pulse ENTER para continuar y volver al Menú Principal")
             return
 
         # Instrucciones para insertar MODELO. Restricciones y "Salir"
@@ -29,8 +60,8 @@ def registro_auto():
             break
         elif len(modelo_vehiculo) <= 3:
             print("Debe ingresar un modelo válido de vehículo para hacer válido el ingreso")
-            print("ERROR ENCONTRADO: La marca que escribió tiene menos de 3 carácteres")
-            input("Pulse ENTER para continuar volver al Menú Principal")
+            print("ERROR ENCONTRADO: La marca que escribió tiene menos de 3 caracteres")
+            input("Pulse ENTER para continuar y volver al Menú Principal")
             return
 
         # Instrucciones para insertar AÑO. Restricciones y "Salir"
@@ -57,12 +88,12 @@ def registro_auto():
             valor = int(valor)
         except ValueError:
             print("Escriba un valor válido")
-            input("Pulse ENTER para volver al menú")
+            input("Pulse ENTER para volver al Menú")
             return
 
         if valor < 500000:
             print("Debe ingresar un valor mayor a $500.000")
-            input("Pulse ENTER para continuar volver al Menú Principal")
+            input("Pulse ENTER para continuar y volver al Menú Principal")
             return
 
         # Inserción de matriz de REGISTRO
@@ -76,6 +107,7 @@ def registro_auto():
         }
 
         vehiculos[patente] = vehiculo
+        escribir_csv()
 
         input("Se ha registrado con éxito.\nPulse ENTER para continuar")
         break
@@ -98,7 +130,7 @@ def consulta_auto():
     print(f'Marca: {vehiculo["Marca"]}')
     print(f'Modelo: {vehiculo["Modelo"]}')
     print(f'Valor: {vehiculo["Valor"]}')
-    print(f'Años desde fabricación: {2024 - vehiculo["Año"]}')
+    print(f'Años desde fabricación: {2024 - int(vehiculo["Año"])}')
     print(f'Estado: {vehiculo["Estado"]}')
 
     print("")
@@ -129,7 +161,7 @@ def contrato():
 
     if vehiculo["Estado"] != "Disponible":
         print("El vehículo no se encuentra disponible para vender\n")
-        input("Pulse ENTER para continuar volver al Menú Principal")
+        input("Pulse ENTER para continuar y volver al Menú Principal")
         return
 
     # FORMATO DE TEXTO DEL CONTRATO
@@ -142,10 +174,10 @@ def contrato():
     print(f'Marca: {vehiculo["Marca"]}')
     print(f'Modelo: {vehiculo["Modelo"]}')
     print(f'Valor: {vehiculo["Valor"]}')
-    print(f'Años desde fabricación: {2024 - vehiculo["Año"]}')
+    print(f'Años desde fabricación: {2024 - int(vehiculo["Año"])}')
     print(f'Estado: {vehiculo["Estado"]}\n')
 
-    # CONFIRMACIÓN VENTA
+    # CONFIRMACION VENTA
     print("Confirme para realizar la venta")
     print("1 - CONFIRMAR")
     print("2 - VOLVER AL MENÚ PRINCIPAL")
@@ -154,6 +186,9 @@ def contrato():
     if ans == "1":
         vehiculo["Estado"] = "Vendido"
         vehiculos[pat] = vehiculo
+        escribir_csv()
         print("La venta ha sido realizada con éxito.")
     elif ans == "2":
         return
+
+
